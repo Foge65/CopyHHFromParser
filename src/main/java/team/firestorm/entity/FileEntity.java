@@ -17,5 +17,5 @@ public class FileEntity {
     private String filePath;
 
     @Column(name = "is_uploaded")
-    private boolean isUploaded;
+    private boolean uploaded;
 }
