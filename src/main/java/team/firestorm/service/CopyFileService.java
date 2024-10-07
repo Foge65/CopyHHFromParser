@@ -12,23 +12,23 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CopyService {
+public class CopyFileService {
     private final FileRepository repository;
 
     @Value("${path.to.FSTracker}")
     private String pathToFSTracker;
 
     @Transactional
-    @Scheduled(cron = "*/40 * * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void copyFileByPath() {
-        List<FileEntity> notUploaded = repository.findByUploaded(false);
-        for (FileEntity fileEntity : notUploaded) {
-            copyFile(fileEntity);
-            repository.updateUploadedByFilePath(fileEntity.getFilePath(), true);
+        Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
+        if (fileEntity.isPresent()) {
+            copyFile(fileEntity.get());
+            repository.updateUploadedByFilePath(fileEntity.get().getFilePath(), true);
         }
     }
 

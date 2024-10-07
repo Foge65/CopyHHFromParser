@@ -15,7 +15,6 @@ import team.firestorm.repository.FileRepository;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,7 +45,7 @@ class ScanFileServiceTest {
         when(mockedFile2.toString()).thenReturn("mocked/path/file2.txt");
 
         FileEntity existingFileEntity = new FileEntity();
-        existingFileEntity.setId(UUID.randomUUID());
+//        existingFileEntity.setId(UUID.randomUUID());
         existingFileEntity.setFilePath(mockedFile1.toString());
 
         try (MockedStatic<Files> mockedFiles = mockStatic(Files.class)) {

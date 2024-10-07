@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 @Service
@@ -34,7 +33,6 @@ public class ScanFileService {
                         }
 
                         FileEntity fileEntity = new FileEntity();
-                        fileEntity.setId(UUID.randomUUID());
                         fileEntity.setFilePath(path);
                         fileRepository.save(fileEntity);
                     });
