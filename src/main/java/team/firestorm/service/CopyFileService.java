@@ -22,9 +22,12 @@ public class CopyFileService {
     @Value("${path.to.FSTracker}")
     private String pathToFSTracker;
 
+    @Value("${path.to.processed.directory}")
+    private String pathToProcessedDirectory;
+
     @Transactional
     @Scheduled(cron = "*/30 * * * * *")
-    public void copyFileByPath() {
+    public void copyByOneFile() {
         Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
         if (fileEntity.isPresent()) {
             copyFile(fileEntity.get());
@@ -36,8 +39,7 @@ public class CopyFileService {
         String path = fileEntity.getFilePath();
         Path fullPath = Path.of(path);
         Path relativePath = Paths.get(pathToFSTracker).relativize(fullPath);
-        Path destinationPath = Path.of("C:\\Users\\user\\AppData\\Local\\PokerTracker 4\\Processed\\"
-                                       + relativePath);
+        Path destinationPath = Path.of(pathToProcessedDirectory + relativePath);
         try {
             Files.createDirectories(destinationPath.getParent());
             if (!Files.exists(destinationPath)) {

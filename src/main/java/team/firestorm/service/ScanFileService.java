@@ -31,7 +31,6 @@ public class ScanFileService {
                         if (fileRepository.findByFilePath(path).isPresent()) {
                             return;
                         }
-
                         FileEntity fileEntity = new FileEntity();
                         fileEntity.setFilePath(path);
                         fileRepository.save(fileEntity);
