@@ -1,6 +1,7 @@
 package team.firestorm.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CopyFileService {
     private final FileRepository repository;
 
@@ -46,6 +48,7 @@ public class CopyFileService {
                 Files.copy(fullPath, destinationPath);
             }
         } catch (IOException e) {
+            log.error("Error copying {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }

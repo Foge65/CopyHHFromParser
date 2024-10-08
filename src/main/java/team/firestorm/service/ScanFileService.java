@@ -1,6 +1,7 @@
 package team.firestorm.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ScanFileService {
     private final FileRepository fileRepository;
 
@@ -36,6 +38,7 @@ public class ScanFileService {
                         fileRepository.save(fileEntity);
                     });
         } catch (IOException e) {
+            log.error("Error scan directory {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
