@@ -23,7 +23,7 @@ public class ScanFileService {
     @Value("${path.to.FSTracker}")
     private String pathToFSTracker;
 
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "* */10 * * * *")
     public void scanAllFiles() {
         File filePath = new File(pathToFSTracker);
         try (Stream<Path> stream = Files.walk(filePath.toPath())) {

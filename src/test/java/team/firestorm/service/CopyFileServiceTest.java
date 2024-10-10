@@ -27,7 +27,7 @@ class CopyFileServiceTest {
     @Value("${path.to.FSTracker}")
     private String pathSource = "C:\\FStracker";
 
-    @Value("${path.to.processed.directory}")
+    @Value("${path.to.from.fstracker}")
     private String pathToProcessedDirectory = "C:\\Users\\user\\AppData\\Local\\PokerTracker 4\\Processed";
 
     @BeforeEach

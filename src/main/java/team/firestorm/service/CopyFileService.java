@@ -24,7 +24,7 @@ public class CopyFileService {
     @Value("${path.to.FSTracker}")
     private String pathToFSTracker;
 
-    @Value("${path.to.processed.directory}")
+    @Value("${path.to.from.fstracker}")
     private String pathToProcessedDirectory;
 
     @Transactional
