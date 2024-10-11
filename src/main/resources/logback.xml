@@ -6,23 +6,39 @@
     </appender>
 
     <appender name="app_error" class="ch.qos.logback.core.FileAppender">
-        <file>log/app.log</file>
+        <file>log/app_error.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <appender name="scan_file" class="ch.qos.logback.core.FileAppender">
-        <file>log/scan.log</file>
+    <appender name="scan_file_error" class="ch.qos.logback.core.FileAppender">
+        <file>log/scan_files_error.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <appender name="copy_file" class="ch.qos.logback.core.FileAppender">
-        <file>log/copy.log</file>
+    <appender name="scan_file_info" class="ch.qos.logback.core.FileAppender">
+        <file>log/scan_files_info.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="copy_file_error" class="ch.qos.logback.core.FileAppender">
+        <file>log/copy_file_error.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="copy_file_info" class="ch.qos.logback.core.FileAppender">
+        <file>log/copy_file_info.log</file>
         <append>true</append>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
@@ -34,11 +50,19 @@
     </logger>
 
     <logger name="team.firestorm.service.ScanFileService" level="error">
-        <appender-ref ref="scan_file"/>
+        <appender-ref ref="scan_file_error"/>
+    </logger>
+
+    <logger name="team.firestorm.service.ScanFileService" level="info">
+        <appender-ref ref="scan_file_info"/>
     </logger>
 
     <logger name="team.firestorm.service.CopyFileService" level="error">
-        <appender-ref ref="copy_file"/>
+        <appender-ref ref="copy_file_error"/>
+    </logger>
+
+    <logger name="team.firestorm.service.CopyFileService" level="info">
+        <appender-ref ref="copy_file_info"/>
     </logger>
 
     <root level="info">

@@ -27,7 +27,7 @@ class ScanFileServiceTest {
     @BeforeEach
     void setUp() {
         String mockPath = "mocked/path";
-        ReflectionTestUtils.setField(service, "pathToFSTracker", mockPath);
+        ReflectionTestUtils.setField(service, "pathFSTracker", mockPath);
     }
 
     @Test

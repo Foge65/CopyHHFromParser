@@ -3,7 +3,6 @@ package team.firestorm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import team.firestorm.entity.FileEntity;
 import team.firestorm.repository.FileRepository;
@@ -20,14 +19,17 @@ import java.util.stream.Stream;
 public class ScanFileService {
     private final FileRepository fileRepository;
 
-    @Value("${path.to.FSTracker}")
-    private String pathToFSTracker;
+    @Value("${path.FSTracker}")
+    private String pathFSTracker;
 
-    @Scheduled(cron = "* */10 * * * *")
+    //    @Scheduled(cron = "0 0 0 * * *")
     public void scanAllFiles() {
-        File filePath = new File(pathToFSTracker);
+        log.info("Scanning files started");
+        File filePath = new File(pathFSTracker);
         try (Stream<Path> stream = Files.walk(filePath.toPath())) {
             stream.filter(Files::isRegularFile)
+                    .filter(ext -> ext.getFileName().toString().endsWith(".txt") ||
+                                   ext.getFileName().toString().endsWith(".xml"))
                     .forEach(file -> {
                         String path = file.toString();
                         if (fileRepository.findByFilePath(path).isPresent()) {
@@ -37,9 +39,11 @@ public class ScanFileService {
                         fileEntity.setFilePath(path);
                         fileRepository.save(fileEntity);
                     });
+            log.info("Scanning files finished");
         } catch (IOException e) {
             log.error("Error scan directory {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
+
 }

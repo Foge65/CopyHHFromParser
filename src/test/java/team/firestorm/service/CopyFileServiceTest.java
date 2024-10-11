@@ -24,21 +24,21 @@ class CopyFileServiceTest {
     @InjectMocks
     private CopyFileService service;
 
-    @Value("${path.to.FSTracker}")
-    private String pathSource = "C:\\FStracker";
+    @Value("${path.FSTracker}")
+    private String pathFSTracker = "C:\\FStracker";
 
     @Value("${path.to.from.fstracker}")
     private String pathToProcessedDirectory = "C:\\Users\\user\\AppData\\Local\\PokerTracker 4\\Processed";
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(service, "pathToFSTracker", pathSource);
-        ReflectionTestUtils.setField(service, "pathToProcessedDirectory", pathToProcessedDirectory);
+        ReflectionTestUtils.setField(service, "pathFSTracker", pathFSTracker);
+        ReflectionTestUtils.setField(service, "pathDist", pathToProcessedDirectory);
     }
 
     @Test
     void copyByOneFile() {
-        Path existingPath = Path.of(pathSource);
+        Path existingPath = Path.of(pathFSTracker);
         FileEntity fileEntity = new FileEntity();
         fileEntity.setFilePath(existingPath.toString());
 

@@ -21,14 +21,14 @@ import java.util.Optional;
 public class CopyFileService {
     private final FileRepository repository;
 
-    @Value("${path.to.FSTracker}")
-    private String pathToFSTracker;
+    @Value("${path.FSTracker}")
+    private String pathFSTracker;
 
-    @Value("${path.to.from.fstracker}")
-    private String pathToProcessedDirectory;
+    @Value("${path.Dist}")
+    private String pathDist;
 
     @Transactional
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "*/10 * * * * *")
     public void copyByOneFile() {
         Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
         if (fileEntity.isPresent()) {
@@ -40,8 +40,8 @@ public class CopyFileService {
     private void copyFile(FileEntity fileEntity) {
         String path = fileEntity.getFilePath();
         Path fullPath = Path.of(path);
-        Path relativePath = Paths.get(pathToFSTracker).relativize(fullPath);
-        Path destinationPath = Path.of(pathToProcessedDirectory + relativePath);
+        Path relativePath = Paths.get(pathFSTracker).relativize(fullPath);
+        Path destinationPath = Path.of(pathDist + relativePath);
         try {
             Files.createDirectories(destinationPath.getParent());
             if (!Files.exists(destinationPath)) {
@@ -52,4 +52,5 @@ public class CopyFileService {
             throw new RuntimeException(e);
         }
     }
+
 }
