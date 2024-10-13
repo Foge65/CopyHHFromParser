@@ -12,7 +12,7 @@ public class ScanFileController {
 
     @PostMapping("/scanFiles")
     public void scanFiles() {
-        service.scanAllFiles();
+        service.scanFiles();
     }
 
 }

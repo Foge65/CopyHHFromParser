@@ -21,14 +21,6 @@
         </encoder>
     </appender>
 
-    <appender name="scan_file_concurrent" class="ch.qos.logback.core.FileAppender">
-        <file>log/scan_files_concurrent.log</file>
-        <append>true</append>
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
-
     <appender name="copy_file" class="ch.qos.logback.core.FileAppender">
         <file>log/copy_file.log</file>
         <append>true</append>
@@ -43,10 +35,6 @@
 
     <logger name="team.firestorm.service.ScanFileService" level="info" additivity="false">
         <appender-ref ref="scan_file"/>
-    </logger>
-
-    <logger name="team.firestorm.service.ConcurrentScanFileService" level="info" additivity="false">
-        <appender-ref ref="scan_file_concurrent"/>
     </logger>
 
     <logger name="team.firestorm.service.CopyFileService" level="info" additivity="false">
