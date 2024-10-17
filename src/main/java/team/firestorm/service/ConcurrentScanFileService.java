@@ -3,7 +3,6 @@ package team.firestorm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.firestorm.entity.FileEntity;
@@ -19,14 +18,14 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ScanFileService {
+public class ConcurrentScanFileService {
     private final FileRepository repository;
 
     @Value("${path.FSTracker}")
     private String pathFSTracker;
 
     @Transactional
-    @Scheduled(cron = "0 0 */12 * * *")
+//    @Scheduled(cron = "0 0 */12 * * *")
     public void scanFiles() {
         try (Stream<Path> dirs = Files.walk(Path.of(pathFSTracker), 2)) {
             dirs.filter(Files::isDirectory)

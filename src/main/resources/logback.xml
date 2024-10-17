@@ -33,7 +33,7 @@
         <appender-ref ref="app_error"/>
     </logger>
 
-    <logger name="team.firestorm.service.ScanFileService" level="info" additivity="false">
+    <logger name="team.firestorm.service.ConcurrentScanFileService" level="info" additivity="false">
         <appender-ref ref="scan_file"/>
     </logger>
 

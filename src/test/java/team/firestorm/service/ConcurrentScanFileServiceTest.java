@@ -18,13 +18,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 
 @ExtendWith(MockitoExtension.class)
-class ScanFileServiceTest {
+class ConcurrentScanFileServiceTest {
 
     @Mock
     private FileRepository repository;
 
     @InjectMocks
-    private ScanFileService service;
+    private ConcurrentScanFileService service;
 
     @Value("${path.FSTracker}")
     private String pathFSTracker;
