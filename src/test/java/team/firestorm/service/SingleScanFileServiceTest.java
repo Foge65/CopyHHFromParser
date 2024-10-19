@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 import team.firestorm.entity.FileEntity;
 import team.firestorm.repository.FileRepository;
@@ -28,27 +27,18 @@ class SingleScanFileServiceTest {
     @InjectMocks
     private SingleScanFileService service;
 
-    @Value("${path.FSTracker}")
     private String pathFSTracker;
 
     @BeforeEach
-    void setUp() {
-        try {
-            pathFSTracker = String.valueOf(Files.createTempDirectory("scanDirTest"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    void setUp() throws IOException {
+        pathFSTracker = String.valueOf(Files.createTempDirectory("trackerFrom"));
 
         ReflectionTestUtils.setField(service, "pathFSTracker", pathFSTracker);
     }
 
     @AfterEach
-    void tearDown() {
-        try {
-            Files.delete(Path.of(pathFSTracker));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    void tearDown() throws IOException {
+        Files.delete(Path.of(pathFSTracker));
     }
 
     @Test
@@ -70,18 +60,15 @@ class SingleScanFileServiceTest {
 
         service.scanAllFiles();
 
-        // Verify count saved rows in DB taking into filters
         ArgumentCaptor<FileEntity> fileEntity = ArgumentCaptor.forClass(FileEntity.class);
         Mockito.verify(repository, Mockito.times(3)).save(fileEntity.capture());
 
         Files.delete(file1);
-        Files.delete(dir1);
-
         Files.delete(file2);
         Files.delete(file3);
-        Files.delete(dir2);
-
         Files.delete(file4);
+        Files.delete(dir1);
+        Files.delete(dir2);
     }
 
 }
