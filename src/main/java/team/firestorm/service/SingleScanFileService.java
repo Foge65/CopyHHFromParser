@@ -22,7 +22,7 @@ public class SingleScanFileService {
     @Value("${path.FSTracker}")
     private String pathFSTracker;
 
-    //    @Scheduled(cron = "0 0 0 * * *")
+    //    @Scheduled(cron = "${scheduled.cron.scan}")
     public void scanAllFiles() {
         log.info("Scanning files started");
         File filePath = new File(pathFSTracker);
