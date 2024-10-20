@@ -28,24 +28,22 @@ public class CopyFileService {
     private String pathDist;
 
     @Transactional
-    @Scheduled(cron = "*/10 * * * * *")
+    @Scheduled(cron = "${scheduled.cron.copy}")
     public void copyByOneFile() {
         Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
         if (fileEntity.isPresent()) {
-            copyFile(fileEntity.get());
+            copyFileByPath(Path.of(fileEntity.get().getFilePath()));
             repository.updateUploadedByFilePath(fileEntity.get().getFilePath(), true);
         }
     }
 
-    private void copyFile(FileEntity fileEntity) {
-        String path = fileEntity.getFilePath();
-        Path fullPath = Path.of(path);
-        Path relativePath = Paths.get(pathFSTracker).relativize(fullPath);
-        Path destinationPath = Path.of(pathDist + relativePath);
+    private void copyFileByPath(Path filePath) {
+        Path relativePath = Paths.get(pathFSTracker).relativize(filePath);
+        Path destinationPath = Path.of(pathDist + "\\" + relativePath);
         try {
             Files.createDirectories(destinationPath.getParent());
             if (!Files.exists(destinationPath)) {
-                Files.copy(fullPath, destinationPath);
+                Files.copy(filePath, destinationPath);
             }
         } catch (IOException e) {
             log.error("Error copying {}", e.getMessage());
