@@ -3,7 +3,6 @@ package team.firestorm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.firestorm.entity.FileEntity;
@@ -28,12 +27,23 @@ public class CopyFileService {
     private String pathDist;
 
     @Transactional
-    @Scheduled(cron = "${scheduled.cron.copy}")
+//    @Scheduled(cron = "${scheduled.cron.copy}")
     public void copyByOneFile() {
         Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
         if (fileEntity.isPresent()) {
             copyFileByPath(Path.of(fileEntity.get().getFilePath()));
             repository.updateUploadedByFilePath(fileEntity.get().getFilePath(), true);
+        }
+    }
+
+    @Transactional
+    public void copyNFiles(int count) {
+        for (int i = 1; i <= count; i++) {
+            Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
+            if (fileEntity.isPresent()) {
+                copyFileByPath(Path.of(fileEntity.get().getFilePath()));
+                repository.updateUploadedByFilePath(fileEntity.get().getFilePath(), true);
+            }
         }
     }
 
