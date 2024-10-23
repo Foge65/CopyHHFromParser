@@ -24,7 +24,7 @@ public class SingleScanFileService {
 
     //    @Scheduled(cron = "${scheduled.cron.scan}")
     public void scanAllFiles() {
-        log.info("Scanning files started");
+        log.info("Single scanning all files started");
         File filePath = new File(pathFSTracker);
         try (Stream<Path> stream = Files.walk(filePath.toPath())) {
             stream.filter(Files::isRegularFile)
@@ -39,7 +39,7 @@ public class SingleScanFileService {
                         fileEntity.setFilePath(path);
                         repository.save(fileEntity);
                     });
-            log.info("Scanning files finished");
+            log.info("Single scanning all files finished");
         } catch (IOException e) {
             log.error("Error scan directory {}", e.getMessage());
             throw new RuntimeException(e);
