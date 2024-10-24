@@ -28,7 +28,6 @@ public class ConcurrentScanFileService {
     @Value("${path.FSTracker}")
     private String pathFSTracker;
 
-
     //    @Scheduled(cron = "${scheduled.cron.scan}")
     @Transactional
     public void scanAllFiles() {
@@ -56,13 +55,14 @@ public class ConcurrentScanFileService {
                 Thread.currentThread().interrupt();
                 executorService.shutdownNow();
             }
-            log.info("Concurrency finished scan all files");
+
+            log.info("Concurrency finished scan all files\n");
         }
     }
 
     private void createThreadForDirectory(Path directory) {
         log.info("Thread started for directory {}", directory);
-        try (Stream<Path> fileStream = Files.list(directory)) {
+        try (Stream<Path> fileStream = Files.walk(directory)) {
             fileStream.filter(Files::isRegularFile)
                     .filter(ext -> ext.getFileName().toString().endsWith(".txt") ||
                                    ext.getFileName().toString().endsWith(".xml"))

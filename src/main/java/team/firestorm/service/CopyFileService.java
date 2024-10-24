@@ -38,6 +38,8 @@ public class CopyFileService {
 
     @Transactional
     public void copyNFiles(int count) {
+        log.info("Copying {} files started", count);
+
         for (int i = 1; i <= count; i++) {
             Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
             if (fileEntity.isPresent()) {
@@ -45,6 +47,8 @@ public class CopyFileService {
                 repository.updateUploadedByFilePath(fileEntity.get().getFilePath(), true);
             }
         }
+
+        log.info("Copying {} files finished\n", count);
     }
 
     private void copyFileByPath(Path filePath) {

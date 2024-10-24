@@ -65,14 +65,14 @@ class ConcurrentScanFileServiceTest {
     void scanAllFiles() throws Exception {
         Path root = Files.createDirectory(Path.of(pathFSTracker).resolve("SPIN"));
 
-        Path dir1 = Files.createDirectory(root.resolve("dir1"));
-        Path file1 = Files.createFile(dir1.resolve("file1.txt"));
+        Path player1 = Files.createDirectory(root.resolve("player1"));
+        Path file1 = Files.createFile(player1.resolve("file1.txt"));
 
-        Path dir2 = Files.createDirectory(root.resolve("dir2"));
-        Path file2 = Files.createFile(dir2.resolve("file2.xml"));
+        Path player2 = Files.createDirectory(root.resolve("player2"));
+        Path file2 = Files.createFile(player2.resolve("file2.xml"));
 
-        Path dir3 = Files.createDirectory(dir2.resolve("dir3"));
-        Path file3 = Files.createFile(dir2.resolve("file3.xml"));
+        Path player2Date = Files.createDirectory(player2.resolve("2020"));
+        Path file3 = Files.createFile(player2Date.resolve("file3.xml"));
 
         Mockito.when(repository.findByFilePath(Mockito.anyString())).thenReturn(Optional.empty());
 
@@ -89,12 +89,12 @@ class ConcurrentScanFileServiceTest {
         Mockito.verify(repository, Mockito.times(1))
                 .save(Mockito.argThat(fileEntity -> fileEntity.getFilePath().equals(file3.toString())));
 
-        Files.delete(file1);
-        Files.delete(file2);
         Files.delete(file3);
-        Files.delete(dir1);
-        Files.delete(dir2);
-        Files.delete(dir3);
+        Files.delete(player2Date);
+        Files.delete(file2);
+        Files.delete(player2);
+        Files.delete(file1);
+        Files.delete(player1);
         Files.delete(root);
     }
 
