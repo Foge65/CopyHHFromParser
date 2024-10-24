@@ -3,6 +3,7 @@ package team.firestorm.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.firestorm.entity.FileEntity;
@@ -28,7 +29,7 @@ public class ConcurrentScanFileService {
     @Value("${path.FSTracker}")
     private String pathFSTracker;
 
-    //    @Scheduled(cron = "${scheduled.cron.scan}")
+    @Scheduled(cron = "${scheduled.cron.scan}")
     @Transactional
     public void scanAllFiles() {
         log.info("Concurrency start scan all files");
@@ -61,7 +62,6 @@ public class ConcurrentScanFileService {
     }
 
     private void createThreadForDirectory(Path directory) {
-        log.info("Thread started for directory {}", directory);
         try (Stream<Path> fileStream = Files.walk(directory)) {
             fileStream.filter(Files::isRegularFile)
                     .filter(ext -> ext.getFileName().toString().endsWith(".txt") ||
@@ -70,7 +70,6 @@ public class ConcurrentScanFileService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("Thread finished for directory {}", directory);
     }
 
     private void saveEntity(Path file) {
