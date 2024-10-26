@@ -18,7 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Optional;
+import java.util.Collections;
 
 @ExtendWith(MockitoExtension.class)
 class ConcurrentScanFileServiceTest {
@@ -71,26 +71,25 @@ class ConcurrentScanFileServiceTest {
         Path player2 = Files.createDirectory(root.resolve("player2"));
         Path file2 = Files.createFile(player2.resolve("file2.xml"));
 
-        Path player2Date = Files.createDirectory(player2.resolve("2020"));
-        Path file3 = Files.createFile(player2Date.resolve("file3.xml"));
+        Path player2SubDir = Files.createDirectory(player2.resolve("2020"));
+        Path file3 = Files.createFile(player2SubDir.resolve("file3.xml"));
 
-        Mockito.when(repository.findByFilePath(Mockito.anyString())).thenReturn(Optional.empty());
+        Mockito.when(repository.findAllByFilePathStartsWith(String.valueOf(player2)))
+                .thenReturn(Collections.emptyList());
+        Mockito.when(repository.findAllByFilePathStartsWith(String.valueOf(player2SubDir)))
+                .thenReturn(Collections.emptyList());
 
         service.scanAllFiles();
 
-        Mockito.verify(repository, Mockito.times(1)).findByFilePath(file1.toString());
-        Mockito.verify(repository, Mockito.times(1)).findByFilePath(file2.toString());
-        Mockito.verify(repository, Mockito.times(1)).findByFilePath(file3.toString());
-
+        Mockito.verify(repository, Mockito.never())
+                .save(Mockito.argThat(entity -> entity.getFilePath().equals(file1.toString())));
         Mockito.verify(repository, Mockito.times(1))
-                .save(Mockito.argThat(fileEntity -> fileEntity.getFilePath().equals(file1.toString())));
+                .save(Mockito.argThat(entity -> entity.getFilePath().equals(file2.toString())));
         Mockito.verify(repository, Mockito.times(1))
-                .save(Mockito.argThat(fileEntity -> fileEntity.getFilePath().equals(file2.toString())));
-        Mockito.verify(repository, Mockito.times(1))
-                .save(Mockito.argThat(fileEntity -> fileEntity.getFilePath().equals(file3.toString())));
+                .save(Mockito.argThat(entity -> entity.getFilePath().equals(file3.toString())));
 
         Files.delete(file3);
-        Files.delete(player2Date);
+        Files.delete(player2SubDir);
         Files.delete(file2);
         Files.delete(player2);
         Files.delete(file1);

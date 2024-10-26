@@ -40,6 +40,7 @@ public class ConcurrentScanFileService {
         try (Stream<Path> directoryStream = Files.walk(Path.of(pathFSTracker).resolve("SPIN"), 1)) {
             directoryStream.filter(Files::isDirectory)
                     .filter(path -> !path.equals(Path.of(pathFSTracker).resolve("SPIN")))
+                    .filter(path -> !path.equals(Path.of(pathFSTracker).resolve(".tmp.driveupload")))
                     .forEach(directory -> {
                         Future<?> future = executorService.submit(() -> createThreadForDirectory(directory));
                         futures.add(future);
@@ -62,11 +63,27 @@ public class ConcurrentScanFileService {
     }
 
     private void createThreadForDirectory(Path directory) {
-        try (Stream<Path> fileStream = Files.walk(directory)) {
-            fileStream.filter(Files::isRegularFile)
+        log.info("Creating thread for directory {}", directory);
+
+        List<String> filesFromRepository = repository.findAllByFilePathStartsWith(String.valueOf(directory));
+
+        List<Path> filesFromDisk = getFilesFromDisk(directory);
+
+        filesFromDisk.stream()
+                .filter(Files::isRegularFile)
+                .filter(file -> !filesFromRepository.contains(String.valueOf(file)))
+                .forEach(this::saveEntity);
+
+        log.info("Finished thread for directory {}", directory);
+    }
+
+    private List<Path> getFilesFromDisk(Path directory) {
+        try {
+            return Files.walk(directory)
+                    .filter(Files::isRegularFile)
                     .filter(ext -> ext.getFileName().toString().endsWith(".txt") ||
                                    ext.getFileName().toString().endsWith(".xml"))
-                    .forEach(this::saveEntity);
+                    .toList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,9 +91,6 @@ public class ConcurrentScanFileService {
 
     private void saveEntity(Path file) {
         String path = file.toString();
-        if (repository.findByFilePath(path).isPresent()) {
-            return;
-        }
         FileEntity fileEntity = new FileEntity();
         fileEntity.setFilePath(path);
         repository.save(fileEntity);
