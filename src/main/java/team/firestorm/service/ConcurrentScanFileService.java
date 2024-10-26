@@ -36,7 +36,6 @@ public class ConcurrentScanFileService {
         try (Stream<Path> directoryStream = Files.walk(Path.of(pathFSTracker).resolve("SPIN"), 1)) {
             directoryStream.filter(Files::isDirectory)
                     .filter(path -> !path.equals(Path.of(pathFSTracker).resolve("SPIN")))
-                    .filter(path -> !path.equals(Path.of(pathFSTracker).resolve(".tmp.driveupload")))
                     .forEach(directory -> {
                         Future<?> future = executorService.submit(() ->
                                 transactionScanService.createThreadForDirectory(directory));

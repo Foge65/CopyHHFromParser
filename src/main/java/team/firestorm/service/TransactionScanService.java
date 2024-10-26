@@ -1,7 +1,6 @@
 package team.firestorm.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import team.firestorm.entity.FileEntity;
@@ -14,15 +13,12 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
-@Slf4j
 @Transactional
 @RequiredArgsConstructor
 public class TransactionScanService {
     private final FileRepository repository;
 
     public void createThreadForDirectory(Path directory) {
-        log.info("Creating thread for directory {}", directory);
-
         List<String> filesFromRepository = repository.findAllByFilePathStartsWith(String.valueOf(directory));
 
         List<Path> filesFromDisk = getFilesFromDisk(directory);
@@ -31,8 +27,6 @@ public class TransactionScanService {
                 .filter(Files::isRegularFile)
                 .filter(file -> !filesFromRepository.contains(String.valueOf(file)))
                 .forEach(this::saveEntity);
-
-        log.info("Finished thread for directory {}", directory);
     }
 
     private List<Path> getFilesFromDisk(Path directory) {
