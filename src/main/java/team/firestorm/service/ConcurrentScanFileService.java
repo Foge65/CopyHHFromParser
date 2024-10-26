@@ -34,7 +34,7 @@ public class ConcurrentScanFileService {
     public void scanAllFiles() {
         log.info("Concurrency start scan all files");
 
-        ExecutorService executorService = Executors.newCachedThreadPool();
+        ExecutorService executorService = Executors.newFixedThreadPool(10);
         List<Future<?>> futures = new ArrayList<>();
 
         try (Stream<Path> directoryStream = Files.walk(Path.of(pathFSTracker).resolve("SPIN"), 1)) {
