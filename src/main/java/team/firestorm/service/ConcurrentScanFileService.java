@@ -78,8 +78,8 @@ public class ConcurrentScanFileService {
     }
 
     private List<Path> getFilesFromDisk(Path directory) {
-        try {
-            return Files.walk(directory)
+        try (Stream<Path> fileStream = Files.walk(directory)) {
+            return fileStream
                     .filter(Files::isRegularFile)
                     .filter(ext -> ext.getFileName().toString().endsWith(".txt") ||
                                    ext.getFileName().toString().endsWith(".xml"))
