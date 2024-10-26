@@ -54,7 +54,7 @@ public class ConcurrentScanFileService {
                 executorService.shutdownNow();
             }
 
-            log.info("Concurrency finished scan all files\n");
+            log.info("Concurrency finished scan all files");
         }
     }
 

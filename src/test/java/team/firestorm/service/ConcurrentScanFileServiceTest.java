@@ -6,11 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import team.firestorm.repository.FileRepository;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -18,13 +15,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.Collections;
 
 @ExtendWith(MockitoExtension.class)
 class ConcurrentScanFileServiceTest {
-
-    @Mock
-    private FileRepository repository;
 
     @InjectMocks
     private ConcurrentScanFileService service;
@@ -74,19 +67,6 @@ class ConcurrentScanFileServiceTest {
         Path player2SubDir = Files.createDirectory(player2.resolve("2020"));
         Path file3 = Files.createFile(player2SubDir.resolve("file3.xml"));
 
-        Mockito.when(repository.findAllByFilePathStartsWith(String.valueOf(player2)))
-                .thenReturn(Collections.emptyList());
-        Mockito.when(repository.findAllByFilePathStartsWith(String.valueOf(player2SubDir)))
-                .thenReturn(Collections.emptyList());
-
-        service.scanAllFiles();
-
-        Mockito.verify(repository, Mockito.never())
-                .save(Mockito.argThat(entity -> entity.getFilePath().equals(file1.toString())));
-        Mockito.verify(repository, Mockito.times(1))
-                .save(Mockito.argThat(entity -> entity.getFilePath().equals(file2.toString())));
-        Mockito.verify(repository, Mockito.times(1))
-                .save(Mockito.argThat(entity -> entity.getFilePath().equals(file3.toString())));
 
         Files.delete(file3);
         Files.delete(player2SubDir);

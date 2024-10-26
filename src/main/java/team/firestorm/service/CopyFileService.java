@@ -48,7 +48,7 @@ public class CopyFileService {
             }
         }
 
-        log.info("Copying {} files finished\n", count);
+        log.info("Copying {} files finished", count);
     }
 
     private void copyFileByPath(Path filePath) {
