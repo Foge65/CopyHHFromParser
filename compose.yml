@@ -26,5 +26,5 @@ services:
       retries: 5
     volumes:
       - ./postgresql.conf:/var/lib/postgresql/data/postgresql.conf
-      #      - ./resources/init.sql:/docker-entrypoint-initdb.d
+      #      - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d
       - C:\\Program Files\\PostgreSQL\\12\\data:/var/lib/postgresql/data
