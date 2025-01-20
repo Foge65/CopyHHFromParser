@@ -9,6 +9,7 @@ services:
     volumes:
       - C:\\FStracker:/app/FStracker
       - C:\\FromFStracker:/app/FromFStracker
+      - ./log:/app/log
 
   db:
     image: postgres:12
