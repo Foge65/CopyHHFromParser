@@ -28,4 +28,4 @@ services:
       retries: 5
     volumes:
       - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - C:\\Program Files\\PostgreSQL\\docker\\copyHHFromParser:/var/lib/postgresql/data
+      - C:\\Program Files\\PostgreSQL\\10\\data:/var/lib/postgresql/data
