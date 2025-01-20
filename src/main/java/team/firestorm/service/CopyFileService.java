@@ -54,7 +54,7 @@ public class CopyFileService {
 
     private void copyFileByPath(Path filePath) {
         Path relativePath = Paths.get(pathFSTracker).relativize(filePath);
-        Path destinationPath = Path.of(pathDist + "\\" + relativePath);
+        Path destinationPath = Path.of(pathDist + "/" + relativePath);
         try {
             Files.createDirectories(destinationPath.getParent());
             if (!Files.exists(destinationPath)) {
