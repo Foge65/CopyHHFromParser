@@ -16,4 +16,9 @@ public class CopyFileController {
         service.copyNFiles(count);
     }
 
+    @PostMapping("/copyByDateStartWith")
+    public void copyByDateStartWith(@RequestParam String date) {
+        service.copyByDateStartWith(date);
+    }
+
 }

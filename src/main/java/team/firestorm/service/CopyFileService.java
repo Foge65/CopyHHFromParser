@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,6 +64,14 @@ public class CopyFileService {
         } catch (IOException e) {
             log.error("Error copying {}", e.getMessage());
             throw new RuntimeException(e);
+        }
+    }
+
+    @Transactional
+    public void copyByDateStartWith(String date) {
+        List<String> filePathByMonth = repository.findFilePathByDateStartWith(date);
+        for (String path : filePathByMonth) {
+            copyFileByPath(Path.of(path));
         }
     }
 

@@ -22,4 +22,7 @@ public interface FileRepository extends CrudRepository<FileEntity, UUID> {
 
     @Query("SELECT f.filePath FROM FileEntity f WHERE f.filePath ILIKE :path%")
     List<String> findAllByFilePathStartsWith(String path);
+
+    @Query("SELECT f.filePath FROM FileEntity f WHERE LOWER(f.filePath) LIKE LOWER(CONCAT('%', :date, '%'))")
+    List<String> findFilePathByDateStartWith(String date);
 }
