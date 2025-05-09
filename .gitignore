@@ -10,3 +10,4 @@ log
 *.factorypath
 *.project
 *.prefs
+.env

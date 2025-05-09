@@ -6,9 +6,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    env_file:
+      - ./.env
     volumes:
-      - C:\\FStracker:/app/FStracker
-      - C:\\FromFStracker:/app/FromFStracker
+      - ${fsTracker}:/app/fsTracker
+      - ${fromFsTracker}:/app/fromFsTracker
       - ./log:/app/log
 
   db:
@@ -29,4 +31,4 @@ services:
       retries: 5
     volumes:
       - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - C:\\Program Files\\PostgreSQL\\docker\\copyHHFromParser:/var/lib/postgresql/data
+      - ~/database/copyHhFromParser:/var/lib/postgresql/data
