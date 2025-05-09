@@ -6,3 +6,7 @@ target/
 *.iml
 *.ipr
 log
+*.classpath
+*.factorypath
+*.project
+*.prefs
