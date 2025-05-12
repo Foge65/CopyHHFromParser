@@ -12,8 +12,6 @@ import java.util.UUID;
 
 @Repository
 public interface FileRepository extends CrudRepository<FileEntity, UUID> {
-    Optional<FileEntity> findByFilePath(String string);
-
     Optional<FileEntity> findFirstByUploadedFalse();
 
     @Modifying
