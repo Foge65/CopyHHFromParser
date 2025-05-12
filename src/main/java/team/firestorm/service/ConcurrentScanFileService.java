@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 @Slf4j
 public class ConcurrentScanFileService {
-    private final TransactionScanService transactionScanService;
+    private final ScanService scanService;
 
     @Value("${path.FSTracker}")
     private String pathFSTracker;
@@ -38,7 +38,7 @@ public class ConcurrentScanFileService {
                     .filter(path -> !path.equals(Path.of(pathFSTracker).resolve("SPIN")))
                     .forEach(directory -> {
                         Future<?> future = executorService.submit(() ->
-                                transactionScanService.createThreadForDirectory(directory));
+                                scanService.createThreadForDirectory(directory));
                         futures.add(future);
                     });
         } catch (IOException e) {

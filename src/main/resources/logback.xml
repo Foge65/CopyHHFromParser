@@ -41,7 +41,7 @@
         <appender-ref ref="scan_file"/>
     </logger>
 
-    <logger name="team.firestorm.service.TransactionScanService" level="info" additivity="false">
+    <logger name="team.firestorm.service.ScanService" level="info" additivity="false">
         <appender-ref ref="scan_file"/>
     </logger>
 

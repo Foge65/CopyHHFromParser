@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
-public class TransactionScanService {
+public class ScanService {
     private final FileRepository repository;
 
+    @Transactional
     public void createThreadForDirectory(Path directory) {
         List<String> filesFromRepository = repository.findAllByFilePathStartsWith(String.valueOf(directory));
 
