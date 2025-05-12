@@ -10,8 +10,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import team.firestorm.service.ConcurrentScanFileService;
 
-@WebMvcTest(ConcurrentScanFileController.class)
-class ConcurrentScanFileControllerTest {
+@WebMvcTest(ScanFileController.class)
+class ScanFileControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -21,7 +21,7 @@ class ConcurrentScanFileControllerTest {
 
     @Test
     void scanFiles() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.post("/concurrentScanFiles"))
+        mockMvc.perform(MockMvcRequestBuilders.post("/scanFiles"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         Mockito.verify(service, Mockito.times(1)).scanAllFiles();

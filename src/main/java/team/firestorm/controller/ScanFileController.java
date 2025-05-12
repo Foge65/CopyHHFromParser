@@ -7,10 +7,10 @@ import team.firestorm.service.ConcurrentScanFileService;
 
 @RestController
 @RequiredArgsConstructor
-public class ConcurrentScanFileController {
+public class ScanFileController {
     private final ConcurrentScanFileService service;
 
-    @PostMapping("/concurrentScanFiles")
+    @PostMapping("/scanFiles")
     public void scanFiles() {
         service.scanAllFiles();
     }
