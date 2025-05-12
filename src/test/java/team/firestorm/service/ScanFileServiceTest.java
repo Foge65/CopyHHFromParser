@@ -17,10 +17,10 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 
 @ExtendWith(MockitoExtension.class)
-class ConcurrentScanFileServiceTest {
+class ScanFileServiceTest {
 
     @InjectMocks
-    private ConcurrentScanFileService service;
+    private ScanFileService service;
 
     private String pathFSTracker;
 

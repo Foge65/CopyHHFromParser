@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ConcurrentScanFileService {
+public class ScanFileService {
     private final ScanService scanService;
 
     @Value("${path.FSTracker}")
@@ -28,7 +28,7 @@ public class ConcurrentScanFileService {
 
     @Scheduled(cron = "${scheduled.cron.scan}")
     public void scanAllFiles() {
-        log.info("Concurrency start scan all files");
+        log.info("Start scan all files");
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         List<Future<?>> futures = new ArrayList<>();
@@ -54,7 +54,7 @@ public class ConcurrentScanFileService {
                 executorService.shutdownNow();
             }
 
-            log.info("Concurrency finished scan all files");
+            log.info("Finished scan all files");
         }
     }
 
