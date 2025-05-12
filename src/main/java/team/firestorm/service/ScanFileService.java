@@ -30,7 +30,7 @@ public class ScanFileService {
     public void scanAllFiles() {
         log.info("Start scan all files");
 
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(8);
         List<Future<?>> futures = new ArrayList<>();
 
         try (Stream<Path> directoryStream = Files.walk(Path.of(pathFSTracker).resolve("SPIN"), 1)) {
