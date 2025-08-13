@@ -32,7 +32,6 @@ services:
       timeout: 10s
       retries: 5
     volumes:
-      - ./src/main/resources/init.sql:/docker-entrypoint-initdb.d/init.sql
       - postgres:/var/lib/postgresql/data
     networks:
       - copyHhFromParser-network
