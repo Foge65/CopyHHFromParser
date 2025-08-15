@@ -8,10 +8,9 @@ import team.firestorm.entity.FileEntity;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Repository
-public interface FileRepository extends CrudRepository<FileEntity, UUID> {
+public interface FileRepository extends CrudRepository<FileEntity, Long> {
     Optional<FileEntity> findFirstByUploadedFalse();
 
     @Modifying
