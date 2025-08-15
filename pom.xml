@@ -100,7 +100,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>11.11.0</version>
                 <configuration>
-                    <url>jdbc:postgresql://localhost:5436/files</url>
+                    <url>jdbc:postgresql://db:5432/files</url>
                     <user>postgres</user>
                 </configuration>
             </plugin>
