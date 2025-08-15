@@ -22,7 +22,6 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -83,7 +82,7 @@ class CopyFileServiceTest {
         Path file1Txt = Files.createFile(dir1.resolve("file1.txt"));
 
         FileEntity fileEntity1 = new FileEntity();
-        fileEntity1.setUuid(UUID.randomUUID());
+        fileEntity1.setId(1L);
         fileEntity1.setFilePath(String.valueOf(file1Txt));
         fileEntity1.setUploaded(false);
 
@@ -110,17 +109,17 @@ class CopyFileServiceTest {
         Path file3 = Files.createFile(dir1.resolve("file3.txt"));
 
         FileEntity fileEntity1 = new FileEntity();
-        fileEntity1.setUuid(UUID.randomUUID());
+        fileEntity1.setId(1L);
         fileEntity1.setFilePath(String.valueOf(file1));
         fileEntity1.setUploaded(false);
 
         FileEntity fileEntity2 = new FileEntity();
-        fileEntity2.setUuid(UUID.randomUUID());
+        fileEntity2.setId(2L);
         fileEntity2.setFilePath(String.valueOf(file2));
         fileEntity2.setUploaded(false);
 
         FileEntity fileEntity3 = new FileEntity();
-        fileEntity3.setUuid(UUID.randomUUID());
+        fileEntity3.setId(3L);
         fileEntity3.setFilePath(String.valueOf(file3));
         fileEntity3.setUploaded(false);
 
