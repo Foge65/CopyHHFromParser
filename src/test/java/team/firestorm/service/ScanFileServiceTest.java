@@ -6,8 +6,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import team.firestorm.repository.FileRepository;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -15,9 +19,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
 
 @ExtendWith(MockitoExtension.class)
 class ScanFileServiceTest {
+
+    @Mock
+    private FileRepository fileRepository;
 
     @InjectMocks
     private ScanFileService service;
@@ -67,6 +75,12 @@ class ScanFileServiceTest {
         Path player2SubDir = Files.createDirectory(player2.resolve("2020"));
         Path file3 = Files.createFile(player2SubDir.resolve("file3.xml"));
 
+        Mockito.when(fileRepository.findAllByFilePathStartsWith(pathFSTracker))
+                .thenReturn(List.of(file1.toString(), file2.toString(), file3.toString()));
+
+        service.scanAllFiles();
+
+        Assertions.assertEquals(fileRepository.findAllByFilePathStartsWith(pathFSTracker).size(), 3);
 
         Files.delete(file3);
         Files.delete(player2SubDir);
