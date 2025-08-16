@@ -12,7 +12,6 @@ import team.firestorm.repository.FileRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +32,7 @@ public class CopyFileService {
     public void copyByOneFile() {
         Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
         if (fileEntity.isPresent()) {
-            copyFileByPath(Path.of(fileEntity.get().getFilePath()));
+            copyFileByPath(fileEntity.get().getFilePath());
             repository.updateUploadedByFilePath(fileEntity.get().getFilePath(), true);
         }
     }
@@ -45,7 +44,7 @@ public class CopyFileService {
         for (int i = 1; i <= count; i++) {
             Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
             if (fileEntity.isPresent()) {
-                copyFileByPath(Path.of(fileEntity.get().getFilePath()));
+                copyFileByPath(fileEntity.get().getFilePath());
                 repository.updateUploadedByFilePath(fileEntity.get().getFilePath(), true);
             }
         }
@@ -53,25 +52,25 @@ public class CopyFileService {
         log.info("Copying {} files finished", count);
     }
 
-    private void copyFileByPath(Path filePath) {
-        Path relativePath = Paths.get(pathFSTracker).relativize(filePath);
-        Path destinationPath = Path.of(pathDist + "/" + relativePath);
-        try {
-            Files.createDirectories(destinationPath.getParent());
-            if (!Files.exists(destinationPath)) {
-                Files.copy(filePath, destinationPath);
-            }
-        } catch (IOException e) {
-            log.error("Error copying {}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-    }
-
     @Transactional
     public void copyByDateStartWith(String date) {
         List<String> filePathByMonth = repository.findFilePathByDateStartWith(date);
         for (String path : filePathByMonth) {
-            copyFileByPath(Path.of(path));
+            copyFileByPath(path);
+        }
+    }
+
+    private void copyFileByPath(String relativeFilePath) {
+        Path sourcePath = Path.of(pathFSTracker).resolve(relativeFilePath);
+        Path destinationPath = Path.of(pathDist).resolve(relativeFilePath);
+        try {
+            Files.createDirectories(destinationPath.getParent());
+            if (!Files.exists(destinationPath)) {
+                Files.copy(sourcePath, destinationPath);
+            }
+        } catch (IOException e) {
+            log.error("Error copying {}", e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 

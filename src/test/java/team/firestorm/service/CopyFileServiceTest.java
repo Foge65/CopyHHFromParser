@@ -83,7 +83,7 @@ class CopyFileServiceTest {
 
         FileEntity fileEntity1 = new FileEntity();
         fileEntity1.setId(1L);
-        fileEntity1.setFilePath(String.valueOf(file1Txt));
+        fileEntity1.setFilePath(Path.of(pathFSTracker).relativize(file1Txt).toString());
         fileEntity1.setUploaded(false);
 
         Mockito.when(repository.findFirstByUploadedFalse()).thenReturn(Optional.of(fileEntity1));
@@ -110,21 +110,20 @@ class CopyFileServiceTest {
 
         FileEntity fileEntity1 = new FileEntity();
         fileEntity1.setId(1L);
-        fileEntity1.setFilePath(String.valueOf(file1));
+        fileEntity1.setFilePath(Path.of(pathFSTracker).relativize(file1).toString());
         fileEntity1.setUploaded(false);
 
         FileEntity fileEntity2 = new FileEntity();
         fileEntity2.setId(2L);
-        fileEntity2.setFilePath(String.valueOf(file2));
+        fileEntity2.setFilePath(Path.of(pathFSTracker).relativize(file2).toString());
         fileEntity2.setUploaded(false);
 
         FileEntity fileEntity3 = new FileEntity();
         fileEntity3.setId(3L);
-        fileEntity3.setFilePath(String.valueOf(file3));
+        fileEntity3.setFilePath(Path.of(pathFSTracker).relativize(file3).toString());
         fileEntity3.setUploaded(false);
 
-        Mockito.when(repository.findFirstByUploadedFalse())
-                .thenReturn(Optional.of(fileEntity1))
+        Mockito.when(repository.findFirstByUploadedFalse()).thenReturn(Optional.of(fileEntity1))
                 .thenReturn(Optional.of(fileEntity2));
 
         service.copyNFiles(2);

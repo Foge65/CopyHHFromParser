@@ -63,32 +63,29 @@ class ScanFileServiceTest {
     }
 
     @Test
-    void scanAllFiles() throws Exception {
+    void scanAllFiles_savesRelativePaths() throws Exception {
         Path root = Files.createDirectory(Path.of(pathFSTracker).resolve("SPIN"));
 
         Path player1 = Files.createDirectory(root.resolve("player1"));
-        Path file1 = Files.createFile(player1.resolve("file1.txt"));
+        Files.createFile(player1.resolve("file1.txt"));
 
         Path player2 = Files.createDirectory(root.resolve("player2"));
-        Path file2 = Files.createFile(player2.resolve("file2.xml"));
+        Files.createFile(player2.resolve("file2.xml"));
 
         Path player2SubDir = Files.createDirectory(player2.resolve("2020"));
-        Path file3 = Files.createFile(player2SubDir.resolve("file3.xml"));
+        Files.createFile(player2SubDir.resolve("file3.xml"));
 
-        Mockito.when(fileRepository.findAllByFilePathStartsWith(pathFSTracker))
-                .thenReturn(List.of(file1.toString(), file2.toString(), file3.toString()));
+        Mockito.lenient().when(fileRepository.findAllByFilePathStartsWith(Mockito.anyString()))
+                .thenReturn(List.of());
 
         service.scanAllFiles();
 
-        Assertions.assertEquals(fileRepository.findAllByFilePathStartsWith(pathFSTracker).size(), 3);
-
-        Files.delete(file3);
-        Files.delete(player2SubDir);
-        Files.delete(file2);
-        Files.delete(player2);
-        Files.delete(file1);
-        Files.delete(player1);
-        Files.delete(root);
+        Mockito.verify(fileRepository)
+                .save(Mockito.argThat(entity -> entity.getFilePath().equals("SPIN/player1/file1.txt")));
+        Mockito.verify(fileRepository)
+                .save(Mockito.argThat(entity -> entity.getFilePath().equals("SPIN/player2/file2.xml")));
+        Mockito.verify(fileRepository)
+                .save(Mockito.argThat(entity -> entity.getFilePath().equals("SPIN/player2/2020/file3.xml")));
     }
 
 }

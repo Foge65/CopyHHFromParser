@@ -38,12 +38,13 @@ public class ScanFileService {
         ExecutorService executorService = Executors.newFixedThreadPool(12);
         List<Future<?>> futures = new ArrayList<>();
 
-        try (Stream<Path> directoryStream = Files.walk(Path.of(pathFSTracker).resolve("SPIN"), 1)) {
+        Path spinRoot = Path.of(pathFSTracker).resolve("SPIN");
+
+        try (Stream<Path> directoryStream = Files.walk(spinRoot, 1)) {
             directoryStream.filter(Files::isDirectory)
-                    .filter(path -> !path.equals(Path.of(pathFSTracker).resolve("SPIN")))
+                    .filter(path -> !path.equals(spinRoot))
                     .forEach(directory -> {
-                        Future<?> future = executorService
-                                .submit(() -> createThreadForDirectory(directory));
+                        Future<?> future = executorService.submit(() -> createThreadForDirectory(directory, spinRoot));
                         futures.add(future);
                     });
         } catch (IOException e) {
@@ -63,16 +64,25 @@ public class ScanFileService {
         }
     }
 
-    @Transactional
-    private void createThreadForDirectory(Path directory) {
-        List<String> filesFromRepository = repository.findAllByFilePathStartsWith(String.valueOf(directory));
+    private void createThreadForDirectory(Path directory, Path spinRoot) {
+        Path relativeDir = spinRoot.relativize(directory);
+        String dirPrefix = "SPIN/" + relativeDir.toString().replace("\\", "/");
+
+        List<String> filesFromRepository = repository.findAllByFilePathStartsWith(dirPrefix);
 
         List<Path> filesFromDisk = getFilesFromDisk(directory);
 
         filesFromDisk.stream()
                 .filter(Files::isRegularFile)
-                .filter(file -> !filesFromRepository.contains(String.valueOf(file)))
-                .forEach(this::saveEntity);
+                .map(file -> "SPIN/" + spinRoot.relativize(file).toString().replace("\\", "/"))
+                .filter(path -> !filesFromRepository.contains(path))
+                .forEach(this::saveEntityRelativePath);
+    }
+
+    private void saveEntityRelativePath(String relativePath) {
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setFilePath(relativePath);
+        repository.save(fileEntity);
     }
 
     private List<Path> getFilesFromDisk(Path directory) {
@@ -86,12 +96,4 @@ public class ScanFileService {
             throw new RuntimeException(e);
         }
     }
-
-    private void saveEntity(Path file) {
-        String path = file.toString();
-        FileEntity fileEntity = new FileEntity();
-        fileEntity.setFilePath(path);
-        repository.save(fileEntity);
-    }
-
 }
