@@ -31,6 +31,7 @@ public class ScanFileService {
     @Value("${path.FSTracker}")
     private String pathFSTracker;
 
+    @Transactional
     @Scheduled(cron = "${scheduled.cron.scan}")
     public void scanAllFiles() {
         log.info("Start scan all files");
@@ -79,12 +80,6 @@ public class ScanFileService {
                 .forEach(this::saveEntityRelativePath);
     }
 
-    private void saveEntityRelativePath(String relativePath) {
-        FileEntity fileEntity = new FileEntity();
-        fileEntity.setFilePath(relativePath);
-        repository.save(fileEntity);
-    }
-
     private List<Path> getFilesFromDisk(Path directory) {
         try (Stream<Path> fileStream = Files.walk(directory)) {
             return fileStream
@@ -96,4 +91,11 @@ public class ScanFileService {
             throw new RuntimeException(e);
         }
     }
+
+    private void saveEntityRelativePath(String relativePath) {
+        FileEntity fileEntity = new FileEntity();
+        fileEntity.setFilePath(relativePath);
+        repository.save(fileEntity);
+    }
+
 }
