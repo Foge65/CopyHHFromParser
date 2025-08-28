@@ -1,19 +1,20 @@
 package team.firestorm.service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import team.firestorm.entity.FileEntity;
-import team.firestorm.repository.FileRepository;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import team.firestorm.entity.FileEntity;
+import team.firestorm.repository.FileRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +29,23 @@ public class CopyFileService {
     private String pathDist;
 
     @Transactional
-    @Scheduled(cron = "${scheduled.cron.copy}")
+    public void copyMissingFiles() {
+        log.info("Copying missing files started");
+
+        List<FileEntity> files = new ArrayList<>();
+        Optional<List<FileEntity>> allNotUploaded = repository.findAllByUploadedFalse();
+        if (allNotUploaded.isPresent()) {
+            files = allNotUploaded.get();
+            for (FileEntity file : files) {
+                copyFileByPath(file.getFilePath());
+            }
+        }
+        repository.updateStatus(files);
+
+        log.info("Copying missing files finished");
+    }
+
+    @Transactional
     public void copyByOneFile() {
         Optional<FileEntity> fileEntity = repository.findFirstByUploadedFalse();
         if (fileEntity.isPresent()) {

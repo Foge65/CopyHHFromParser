@@ -73,11 +73,28 @@ public class ScanFileService {
 
         List<Path> filesFromDisk = getFilesFromDisk(directory);
 
+        List<Path> collectFiles = new ArrayList<>();
+
+        for (Path file : filesFromDisk) {
+            if (Files.isRegularFile(file)) {
+                String path = "SPIN/" + spinRoot.relativize(file).toString().replace("\\", "/");
+                if (!filesFromRepository.contains(path)) {
+                    collectFiles.add(file);
+                }
+            }
+        }
+
         filesFromDisk.stream()
                 .filter(Files::isRegularFile)
                 .map(file -> "SPIN/" + spinRoot.relativize(file).toString().replace("\\", "/"))
                 .filter(path -> !filesFromRepository.contains(path))
                 .forEach(this::saveEntityRelativePath);
+    }
+
+    private List<FileEntity> collectFiles(FileEntity fileEntity) {
+        List<FileEntity> files = new ArrayList<>();
+        files.add(fileEntity);
+        return files;
     }
 
     private List<Path> getFilesFromDisk(Path directory) {

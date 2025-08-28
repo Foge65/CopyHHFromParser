@@ -17,9 +17,15 @@ public interface FileRepository extends CrudRepository<FileEntity, Long> {
     @Query("UPDATE FileEntity f SET f.uploaded = :status WHERE f.filePath = :filePath")
     void updateUploadedByFilePath(String filePath, boolean status);
 
+    @Modifying
+    @Query("UPDATE FileEntity f SET f.uploaded = true")
+    void updateStatus(List<FileEntity> files);
+
     @Query("SELECT f.filePath FROM FileEntity f WHERE f.filePath ILIKE :path%")
     List<String> findAllByFilePathStartsWith(String path);
 
     @Query("SELECT f.filePath FROM FileEntity f WHERE LOWER(f.filePath) LIKE LOWER(CONCAT('%', :date, '%'))")
     List<String> findFilePathByDateStartWith(String date);
+
+    Optional<List<FileEntity>> findAllByUploadedFalse();
 }
