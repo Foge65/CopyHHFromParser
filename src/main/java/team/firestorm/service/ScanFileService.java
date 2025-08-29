@@ -5,14 +5,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import team.firestorm.entity.FileEntity;
@@ -34,23 +38,39 @@ public class ScanFileService {
         rootDirectory = Path.of(pathFSTracker).resolve("SPIN");
     }
 
+    @Transactional
     @Scheduled(cron = "${scheduled.cron.scan}")
     public void scanAllFiles() {
         log.info("Starting scan all files");
+
+        ExecutorService executorService = Executors.newFixedThreadPool(30);
+        List<Future<?>> futures = new ArrayList<>();
 
         try (Stream<Path> stream = Files.walk(rootDirectory, 1)) {
             stream
                 .filter(Files::isDirectory)
                 .filter(path -> !path.equals(rootDirectory))
-                .forEach(this::saveScannedEntities);
+                .forEach(directory -> {
+                    Future<?> future = executorService.submit(() -> saveScannedEntities(directory));
+                    futures.add(future);
+                });
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
+        } finally {
+            executorService.shutdown();
+            try {
+                for (Future<?> future : futures) {
+                    future.get();
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                Thread.currentThread().interrupt();
+                executorService.shutdownNow();
+            }
 
-        log.info("Finished scan all files");
+            log.info("Finished scan all files");
+        }
     }
 
-    @Async
     public void saveScannedEntities(Path directory) {
         try {
             List<Path> paths = collectNewPaths(directory);
