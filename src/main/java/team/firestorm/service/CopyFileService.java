@@ -29,7 +29,7 @@ public class CopyFileService {
     private String pathDist;
 
     @Transactional
-    public void copyMissingFiles() {
+    public void copyMissedFiles() {
         log.info("Copying missing files started");
 
         List<FileEntity> files = new ArrayList<>();

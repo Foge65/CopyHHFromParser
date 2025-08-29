@@ -21,8 +21,8 @@ public class CopyFileController {
         service.copyByDateStartWith(date);
     }
 
-    @PostMapping("/copyMissingFiles")
-    public void copyMissingFiles() {
-        service.copyMissingFiles();
+    @PostMapping("/copyMissedFiles")
+    public void copyMissedFiles() {
+        service.copyMissedFiles();
     }
 }
