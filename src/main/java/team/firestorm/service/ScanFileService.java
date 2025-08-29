@@ -36,7 +36,7 @@ public class ScanFileService {
 
     @Scheduled(cron = "${scheduled.cron.scan}")
     public void scanAllFiles() {
-        log.info("Start scan all files");
+        log.info("Starting scan all files");
 
         try (Stream<Path> stream = Files.walk(rootDirectory, 1)) {
             stream
@@ -56,7 +56,6 @@ public class ScanFileService {
             List<Path> paths = collectNewPaths(directory);
             List<FileEntity> entities = collectFileEntities(paths);
             repository.saveAll(entities);
-            log.info("Saved {} files", entities.size());
         } catch (Exception e) {
             log.error("Error in directory {}", directory, e);
         }

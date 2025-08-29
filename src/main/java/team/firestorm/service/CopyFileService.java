@@ -30,7 +30,7 @@ public class CopyFileService {
 
     @Transactional
     public void copyMissedFiles() {
-        log.info("Copying missing files started");
+        log.info("Copying missed files started");
 
         List<FileEntity> files = new ArrayList<>();
         Optional<List<FileEntity>> allNotUploaded = repository.findAllByUploadedFalse();
@@ -42,7 +42,7 @@ public class CopyFileService {
         }
         repository.updateStatus(files);
 
-        log.info("Copying missing files finished");
+        log.info("Copying missed files finished");
     }
 
     @Transactional
