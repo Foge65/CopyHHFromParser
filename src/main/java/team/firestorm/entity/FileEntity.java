@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "file")
+@Table(name = "file", indexes = {@Index(name = "file_path_index", columnList = "filePath")})
 @Data
 public class FileEntity {
     @Id
