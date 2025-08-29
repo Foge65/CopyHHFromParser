@@ -51,7 +51,7 @@ public class ScanFileService {
     }
 
     @Async
-    private void saveScannedEntities(Path directory) {
+    public void saveScannedEntities(Path directory) {
         try {
             List<Path> paths = collectNewPaths(directory);
             List<FileEntity> entities = collectFileEntities(paths);
