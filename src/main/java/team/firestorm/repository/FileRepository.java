@@ -18,8 +18,8 @@ public interface FileRepository extends CrudRepository<FileEntity, Long> {
     void updateUploadedByFilePath(String filePath, boolean status);
 
     @Modifying
-    @Query("UPDATE FileEntity f SET f.uploaded = true")
-    void updateStatus(List<FileEntity> files);
+    @Query("UPDATE FileEntity f SET f.uploaded = true WHERE f.id IN :ids")
+    void updateStatusByIds(List<Long> ids);
 
     @Query("SELECT f.filePath FROM FileEntity f WHERE f.filePath ILIKE :path%")
     List<String> findAllByFilePathStartsWith(String path);
