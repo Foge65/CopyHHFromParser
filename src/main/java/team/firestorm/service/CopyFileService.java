@@ -1,26 +1,29 @@
 package team.firestorm.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import team.firestorm.entity.FileEntity;
 import team.firestorm.repository.FileRepository;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class CopyFileService {
     private final FileRepository repository;
+    private final FileStatusService fileStatusService;
 
     @Value("${path.FSTracker}")
     private String pathFSTracker;
@@ -28,21 +31,32 @@ public class CopyFileService {
     @Value("${path.Dist}")
     private String pathDist;
 
-    @Transactional
+    private final Set<Path> createdDirs = ConcurrentHashMap.newKeySet();
+
+    @Transactional(readOnly = true)
+    public List<FileEntity> findNotUploadedFiles() {
+        return repository.findAllByUploadedFalse().orElse(Collections.emptyList());
+    }
+
     public void copyMissedFiles() {
         log.info("Copying missed files started");
 
-        List<FileEntity> files = new ArrayList<>();
-        Optional<List<FileEntity>> allNotUploaded = repository.findAllByUploadedFalse();
-        if (allNotUploaded.isPresent()) {
-            files = allNotUploaded.get();
-            for (FileEntity file : files) {
-                copyFileByPath(file.getFilePath());
-            }
+        List<FileEntity> files = findNotUploadedFiles();
+        if (files.isEmpty()) {
+            log.info("No files to copy");
+            return;
         }
-        repository.updateStatus(files);
 
-        log.info("Copying missed files finished");
+        List<Long> copiedIds = files.parallelStream()
+                .filter(file -> copyFileByPath(file.getFilePath()))
+                .map(FileEntity::getId)
+                .collect(java.util.stream.Collectors.toList());
+
+        if (!copiedIds.isEmpty()) {
+            fileStatusService.updateUploadedStatus(copiedIds);
+        }
+
+        log.info("Copying missed files finished. Copied {} of {}", copiedIds.size(), files.size());
     }
 
     @Transactional
@@ -77,17 +91,19 @@ public class CopyFileService {
         }
     }
 
-    private void copyFileByPath(String relativeFilePath) {
+    private boolean copyFileByPath(String relativeFilePath) {
         Path sourcePath = Path.of(pathFSTracker).resolve(relativeFilePath);
         Path destinationPath = Path.of(pathDist).resolve(relativeFilePath);
         try {
-            Files.createDirectories(destinationPath.getParent());
-            if (!Files.exists(destinationPath)) {
-                Files.copy(sourcePath, destinationPath);
+            Path parentDir = destinationPath.getParent();
+            if (createdDirs.add(parentDir)) {
+                Files.createDirectories(parentDir);
             }
+            Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+            return true;
         } catch (IOException e) {
-            log.error("Error copying {}", e.getMessage());
-            throw new RuntimeException(e);
+            log.error("Error copying {}: {}", relativeFilePath, e.getMessage());
+            return false;
         }
     }
 
