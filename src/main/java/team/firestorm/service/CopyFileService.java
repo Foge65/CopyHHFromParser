@@ -23,7 +23,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class CopyFileService {
     private final FileRepository repository;
-    private final FileStatusService fileStatusService;
 
     @Value("${path.FSTracker}")
     private String pathFSTracker;
@@ -38,6 +37,7 @@ public class CopyFileService {
         return repository.findAllByUploadedFalse().orElse(Collections.emptyList());
     }
 
+    @Transactional
     public void copyMissedFiles() {
         log.info("Copying missed files started");
 
@@ -52,9 +52,7 @@ public class CopyFileService {
                 .map(FileEntity::getId)
                 .collect(java.util.stream.Collectors.toList());
 
-        if (!copiedIds.isEmpty()) {
-            fileStatusService.updateUploadedStatus(copiedIds);
-        }
+        repository.updateStatusByIds(copiedIds);
 
         log.info("Copying missed files finished. Copied {} of {}", copiedIds.size(), files.size());
     }
