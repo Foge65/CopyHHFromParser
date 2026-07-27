@@ -12,11 +12,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +28,6 @@ public class CopyFileService {
 
     @Value("${path.Dist}")
     private String pathDist;
-
-    private final Set<Path> createdDirs = ConcurrentHashMap.newKeySet();
 
     @Transactional(readOnly = true)
     public List<FileEntity> findNotUploadedFiles() {
@@ -47,10 +44,12 @@ public class CopyFileService {
             return;
         }
 
-        List<Long> copiedIds = files.parallelStream()
-                .filter(file -> copyFileByPath(file.getFilePath()))
-                .map(FileEntity::getId)
-                .collect(java.util.stream.Collectors.toList());
+        List<Long> copiedIds = new ArrayList<>();
+        for (FileEntity file : files) {
+            if (copyFileByPath(file.getFilePath())) {
+                copiedIds.add(file.getId());
+            }
+        }
 
         repository.updateStatusByIds(copiedIds);
 
@@ -93,10 +92,7 @@ public class CopyFileService {
         Path sourcePath = Path.of(pathFSTracker).resolve(relativeFilePath);
         Path destinationPath = Path.of(pathDist).resolve(relativeFilePath);
         try {
-            Path parentDir = destinationPath.getParent();
-            if (createdDirs.add(parentDir)) {
-                Files.createDirectories(parentDir);
-            }
+            Files.createDirectories(destinationPath.getParent());
             Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
             return true;
         } catch (IOException e) {
